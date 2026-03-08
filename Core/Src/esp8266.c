@@ -17,27 +17,19 @@ static ESP8266_Status ESP_SendCommand(const char *cmd, const char *ack, uint32_t
 ESP8266_Status ESP_Init(void)
 {
   ESP8266_Status res;
-  printf("ESP8266 Initializing...\n");
   HAL_Delay(1000);
 
   res = ESP_SendCommand("AT\r\n", "OK", 2000);
   if(res != ESP8266_OK)
   {
-    printf("No response from ESP module!\n");
     return res;
-  }
-  else
-  {
-    printf("ESP Module responding!\n");
   }
 
   res = ESP_SendCommand("ATE0\r\n", "OK", 2000); // Disable echo
   if(res != ESP8266_OK)
   {
-    printf("Failed to disable echo\n");
     return res;
   }
-  printf("ESP8266 Initialization complete!\n");
   return ESP8266_OK;
 }
 
@@ -46,11 +38,9 @@ ESP8266_Status ESP_ConnectWiFi(const char *ssid, const char *password, char *ip_
   char cmd[128];
   snprintf(cmd, sizeof(cmd), "AT+CWMODE=1\r\n");
 
-  printf("Setting station mode...\n");
   ESP8266_Status result = ESP_SendCommand(cmd, "OK", 2000); // wait up to 2s
   if(result != ESP8266_OK)
   {
-    printf("Failed to set mode\n");
     return result;
   }
 
@@ -66,13 +56,12 @@ ESP8266_Status ESP_ConnectWiFi(const char *ssid, const char *password, char *ip_
     return result;
   }
 
-  printf("Connected to WiFi !!! Getting IP address...\n");
+  printf("Connected to WiFi !!!\n");
   ESP_ConnState = ESP8266_CONNECTED_NO_IP;
   // Fetch IP with retries inside ESP_GetIP
   result = ESP_GetIP(ip_buffer, buffer_len);
   if(result != ESP8266_OK)
   {
-    printf("Failed to fetch IP. Status=%d\n", result);
     return result;
   }
 
@@ -92,7 +81,6 @@ static ESP8266_Status ESP_GetIP(char *ip_buffer, uint16_t buffer_len)
     ESP8266_Status result = ESP_SendCommand("AT+CIFSR\r\n", "OK", 5000);
     if(result != ESP8266_OK)
     {
-      printf("CIFSR failed on attempt %d\n", attempt);
       continue;
     }
 
@@ -122,7 +110,6 @@ static ESP8266_Status ESP_GetIP(char *ip_buffer, uint16_t buffer_len)
 
       if(strcmp(ip_buffer, "0.0.0.0") == 0)
       {
-        printf("Attempt %d: IP not ready yet (0.0.0.0). Retrying...\n", attempt);
         ESP_ConnState = ESP8266_CONNECTED_NO_IP;
         HAL_Delay(1000);
         continue;
@@ -132,11 +119,9 @@ static ESP8266_Status ESP_GetIP(char *ip_buffer, uint16_t buffer_len)
       return ESP8266_OK;
     }
 
-    printf("Attempt %d: Failed to parse STAIP.\n", attempt);
     HAL_Delay(500);
   }
 
-  printf("Failed to fetch IP after retries.\n");
   ESP_ConnState = ESP8266_CONNECTED_NO_IP;  // still connected, but no IP
   return ESP8266_ERROR;
 }
@@ -173,7 +158,6 @@ static ESP8266_Status ESP_SendCommand(const char *cmd, const char *ack, uint32_t
       // handle busy response
       if(strstr(esp_rx_buffer, "busy"))
       {
-        printf("ESP is busy... delaying before retry \n");
         HAL_Delay(1500);
         idx = 0;
         memset(esp_rx_buffer, 0, sizeof(esp_rx_buffer));
@@ -190,6 +174,5 @@ static ESP8266_Status ESP_SendCommand(const char *cmd, const char *ack, uint32_t
   if(idx == 0)
     return ESP8266_NO_RESPONSE;
 
-  printf("Timeout or no ACK. Buffer: %s", esp_rx_buffer);
   return ESP8266_TIMEOUT;
 }
