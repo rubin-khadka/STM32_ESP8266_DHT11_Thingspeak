@@ -53,7 +53,7 @@ ESP8266_Status ESP_ConnectWiFi(const char *ssid, const char *password, char *ip_
   if(result != ESP8266_OK)
   {
     printf("WiFi connection failed\n");
-    ESP_ConnState = ESP8266_NOT_CONNECTED;
+    ESP_ConnState = ESP8266_CONNECTED_NO_IP;
     return result;
   }
 
@@ -80,7 +80,7 @@ ESP8266_Status ESP_SendToThingSpeak(const char *apiKey, float val1, float val2)
   char cmd[256];
   ESP8266_Status result;
 
-  printf("Connecting to ThingSpeak...");
+  printf("Connecting to ThingSpeak...\n");
 
   // Start TCP connection (HTTP port 80)
   snprintf(cmd, sizeof(cmd), "AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n");
@@ -120,7 +120,7 @@ ESP8266_Status ESP_SendToThingSpeak(const char *apiKey, float val1, float val2)
 
       if(entryId > 0)
       {
-        printf("Update successful!");
+        printf("Update successful!\n");
         return ESP8266_OK;
       }
       else

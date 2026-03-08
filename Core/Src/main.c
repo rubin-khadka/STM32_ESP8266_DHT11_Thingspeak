@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include "dht11.h"
 #include "dwt.h"
+#include "tasks.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -40,7 +41,8 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-#define THINGSSPEAK_SEND_TICKS  1500
+#define THINGSSPEAK_SEND_TICKS  150
+#define DHT11_READ_TICKS        10
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -116,7 +118,7 @@ int main(void)
     Error_Handler();
   }
 
-  if(ESP_ConnectWiFi("xxx", "xxx!", ip_buf, sizeof(ip_buf)) != ESP8266_OK)
+  if(ESP_ConnectWiFi("mynoobu", "Sarah159!", ip_buf, sizeof(ip_buf)) != ESP8266_OK)
   {
     printf("Failed to connect to wifi...\n");
     Error_Handler();
@@ -124,6 +126,10 @@ int main(void)
 
   DWT_Init();
   DHT11_Init();
+
+  // Loop counters
+  uint16_t dht_count = 0;
+  uint16_t thingspeak_count = 0;
 
   // Setup TIM3 for 10ms control loop
   TIMER3_SetupPeriod(10);  // 10ms period
@@ -135,6 +141,21 @@ int main(void)
   while(1)
   {
     /* USER CODE END WHILE */
+    // Read DHT11 every 1 seconds
+    if(dht_count++ >= DHT11_READ_TICKS)
+    {
+      Task_DHT11_Read();
+      dht_count = 0;
+    }
+
+    if(thingspeak_count++ >= THINGSSPEAK_SEND_TICKS)
+    {
+      if(ESP_ConnState == ESP8266_CONNECTED_IP)
+      {
+        ESP_SendToThingSpeak(API_KEY, dht11_temperature, dht11_humidity);
+      }
+      thingspeak_count = 0;
+    }
 
     TIMER3_WaitPeriod(); // Heart Beat time check
     /* USER CODE BEGIN 3 */
