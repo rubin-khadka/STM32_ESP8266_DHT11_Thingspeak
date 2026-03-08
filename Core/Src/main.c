@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "esp8266.h"
+#include "timer3.h"
 #include <stdio.h>
 /* USER CODE END Includes */
 
@@ -37,7 +38,7 @@
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
+#define THINGSSPEAK_SEND_TICKS  1500
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -66,6 +67,9 @@ int _write(int file, char *ptr, int len)
 }
 
 char ip_buf[16];
+
+#define API_KEY "HFT599YW7PMFWYKG"
+
 /* USER CODE END 0 */
 
 /**
@@ -115,6 +119,13 @@ int main(void)
     printf("Failed to connect to wifi...\n");
     Error_Handler();
   }
+
+  DWT_Init();
+  DHT11_Init();
+
+  // Setup TIM3 for 10ms control loop
+  TIMER3_SetupPeriod(10);  // 10ms period
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -123,6 +134,7 @@ int main(void)
   {
     /* USER CODE END WHILE */
 
+    TIMER3_WaitPeriod(); // Heart Beat time check
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
