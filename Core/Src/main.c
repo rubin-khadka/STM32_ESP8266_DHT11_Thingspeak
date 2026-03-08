@@ -24,6 +24,8 @@
 #include "esp8266.h"
 #include "timer3.h"
 #include <stdio.h>
+#include "dht11.h"
+#include "dwt.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/

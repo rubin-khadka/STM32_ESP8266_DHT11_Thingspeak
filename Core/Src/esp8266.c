@@ -8,6 +8,7 @@
 #include "esp8266.h"
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 
 ESP8266_ConnectionState ESP_ConnState = ESP8266_DISCONNECTED;
 static char esp_rx_buffer[2048];
@@ -72,6 +73,65 @@ ESP8266_Status ESP_ConnectWiFi(const char *ssid, const char *password, char *ip_
 ESP8266_ConnectionState ESP_GetConnectionState(void)
 {
   return ESP_ConnState;
+}
+
+ESP8266_Status ESP_SendToThingSpeak(const char *apiKey, float val1, float val2)
+{
+  char cmd[256];
+  ESP8266_Status result;
+
+  printf("Connecting to ThingSpeak...");
+
+  // Start TCP connection (HTTP port 80)
+  snprintf(cmd, sizeof(cmd), "AT+CIPSTART=\"TCP\",\"api.thingspeak.com\",80\r\n");
+  result = ESP_SendCommand(cmd, "CONNECT", 5000);
+  if(result != ESP8266_OK)
+  {
+    return result;
+  }
+
+  // Build HTTP GET request
+  char httpReq[256];
+  snprintf(httpReq, sizeof(httpReq), "GET /update?api_key=%s&field1=%.2f&field2=%.2f\r\n", apiKey, val1, val2);
+
+  // Tell ESP how many bytes we will send
+  snprintf(cmd, sizeof(cmd), "AT+CIPSEND=%d\r\n", (int) strlen(httpReq));
+  result = ESP_SendCommand(cmd, ">", 2000);
+  if(result != ESP8266_OK)
+  {
+    return result;
+  }
+
+  // Send actual request and wait for ThingSpeak response
+  result = ESP_SendCommand(httpReq, "SEND OK", 5000);
+  if(result != ESP8266_OK)
+  {
+    return result;
+  }
+
+  // Parse ThingSpeak reply
+  char *ipd = strstr(esp_rx_buffer, "+IPD,");
+  if(ipd)
+  {
+    char *colon = strchr(ipd, ':');
+    if(colon)
+    {
+      int entryId = atoi(colon + 1);  // convert server reply to int
+
+      if(entryId > 0)
+      {
+        printf("Update successful!");
+        return ESP8266_OK;
+      }
+      else
+      {
+        return ESP8266_ERROR;
+      }
+    }
+  }
+
+  printf("No valid ThingSpeak response found.");
+  return ESP8266_ERROR;
 }
 
 static ESP8266_Status ESP_GetIP(char *ip_buffer, uint16_t buffer_len)

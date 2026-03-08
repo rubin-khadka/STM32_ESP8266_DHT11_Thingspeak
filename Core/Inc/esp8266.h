@@ -36,5 +36,6 @@ typedef enum
 ESP8266_Status ESP_Init(void);
 ESP8266_Status ESP_ConnectWiFi(const char *ssid, const char *password, char *ip_buffer, uint16_t buffer_len);
 ESP8266_ConnectionState ESP_GetConnectionState(void);
+ESP8266_Status ESP_SendToThingSpeak(const char *apiKey, float val1, float val2);
 
 #endif /* INC_ESP8266_H_ */
