@@ -118,7 +118,7 @@ int main(void)
     Error_Handler();
   }
 
-  if(ESP_ConnectWiFi("xxx", "xxx!", ip_buf, sizeof(ip_buf)) != ESP8266_OK)
+  if(ESP_ConnectWiFi("xxxxx", "xxxxxxx!", ip_buf, sizeof(ip_buf)) != ESP8266_OK)
   {
     printf("Failed to connect to wifi...\n");
     Error_Handler();
