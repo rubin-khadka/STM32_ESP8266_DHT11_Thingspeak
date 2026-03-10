@@ -12,19 +12,24 @@ While NodeMCU is powerful enough to build complete IoT projects on its own, the 
 
 I had this module available, so I used it for demonstration - but the code works with any ESP8266 module running AT firmware.
 
-## Video Demonstrations
+## Project in Action
+
+### Hardware Setup
 
 https://github.com/user-attachments/assets/a4c1c71f-f1ff-4853-99e9-7ecaf0b4da2e
 
-*Hardware Connection*
+### Debug Output
 
 https://github.com/user-attachments/assets/199908f6-b6e9-4f4f-9b5d-6dd82351187c
 
 - **Left:** Data received by ThingSpeak showing graph and indicator
 - **Right:** UART Output showing device connecting to wifi and showing confirmation that data is sent to ThingSpeak
 
-### ThingSpeak Output
+### Cloud Visualization
+
 <img width="1335" height="911" alt="ThingSpeak_output" src="https://github.com/user-attachments/assets/8cad4372-f6fe-4042-8c12-513f9ddd53e3" />
+
+*ThingSpeak channel showing real-time temperature and humidity graphs*
 
 ## Project Schematic
 
