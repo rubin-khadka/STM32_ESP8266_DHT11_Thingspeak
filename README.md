@@ -23,6 +23,9 @@ https://github.com/user-attachments/assets/199908f6-b6e9-4f4f-9b5d-6dd82351187c
 - **Left:** Data received by ThingSpeak showing graph and indicator
 - **Right:** UART Output showing device connecting to wifi and showing confirmation that data is sent to ThingSpeak
 
+### ThingSpeak Output
+<img width="1335" height="911" alt="ThingSpeak_output" src="https://github.com/user-attachments/assets/8cad4372-f6fe-4042-8c12-513f9ddd53e3" />
+
 ## Project Schematic
 
 <img width="1305" height="500" alt="Schematic Diagram" src="https://github.com/user-attachments/assets/356bde33-78dd-47ef-86ee-8f5eccd704dd" />
